@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestión de Contactos (Simulada)</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body {
+    background-color: #f4f7f6;
+    color: #2d3436;
+}
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+}
+.btn-primary {
+    background-color: #6c5ce7;
+    border: none;
+}
+.btn-warning {
+    background-color: #fd79a8;
+    border: none;
+}
+.table thead {
+    background-color: #0984e3;
+    color: #fff;
+}
+</style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Gestión de Contactos</h2>
+
+    <!-- Formulario de contacto -->
+    <div class="card p-4 mb-4">
+        <h5>Agregar contacto</h5>
+        <form id="contactoForm">
+            <div class="mb-3">
+                <label>Nombre:</label>
+                <input type="text" id="nombre" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Correo:</label>
+                <input type="email" id="correo" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Teléfono:</label>
+                <input type="text" id="telefono" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar</button>
+        </form>
+    </div>
+
+    <!-- Tabla de contactos -->
+    <div class="card p-4">
+        <h5>Lista de contactos</h5>
+        <table class="table table-bordered" id="tablaContactos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+/**
+ * Array para almacenar los contactos en memoria
+ * Cada contacto es un objeto con:
+ *  - id: número único
+ *  - nombre: string
+ *  - correo: string
+ *  - telefono: string
+ */
+let contactos = [];
+let nextId = 1;
+
+/**
+ * Función: mostrarContactos
+ * Propósito: Actualiza la tabla de contactos en la interfaz
+ */
+function mostrarContactos() {
+    const tbody = document.querySelector('#tablaContactos tbody');
+    tbody.innerHTML = '';
+    contactos.forEach(c => {
+        tbody.innerHTML += `
+        <tr>
+            <td>${c.id}</td>
+            <td>${c.nombre}</td>
+            <td>${c.correo}</td>
+            <td>${c.telefono}</td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="editarContacto(${c.id})">Editar</button>
+                <button class="btn btn-sm btn-danger" onclick="eliminarContacto(${c.id})">Eliminar</button>
+            </td>
+        </tr>`;
+    });
+}
+
+/**
+ * Función: agregarContacto
+ * Propósito: Captura los datos del formulario y agrega un nuevo contacto al array
+ */
+document.getElementById('contactoForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById('nombre').value.trim();
+    const correo = document.getElementById('correo').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+
+    if(!nombre || !correo || !telefono) return alert('Todos los campos son obligatorios');
+
+    contactos.push({ id: nextId++, nombre, correo, telefono });
+    document.getElementById('contactoForm').reset();
+    mostrarContactos();
+});
+
+/**
+ * Función: eliminarContacto
+ * Propósito: Elimina un contacto del array según su id
+ * @param {number} id - ID del contacto a eliminar
+ */
+function eliminarContacto(id) {
+    contactos = contactos.filter(c => c.id !== id);
+    mostrarContactos();
+}
+
+/**
+ * Función: editarContacto
+ * Propósito: Permite modificar los datos de un contacto mediante prompts
+ * @param {number} id - ID del contacto a editar
+ */
+function editarContacto(id) {
+    const c = contactos.find(c => c.id === id);
+    const nombre = prompt("Editar nombre:", c.nombre);
+    const correo = prompt("Editar correo:", c.correo);
+    const telefono = prompt("Editar teléfono:", c.telefono);
+    if(nombre && correo && telefono){
+        c.nombre = nombre;
+        c.correo = correo;
+        c.telefono = telefono;
+        mostrarContactos();
+    }
+}
+
+// Inicializa tabla vacía al cargar la página
+mostrarContactos();
+</script>
+</body>
+</html>
